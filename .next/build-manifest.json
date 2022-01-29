@@ -1,5 +1,6 @@
 {
   "polyfillFiles": [
+<<<<<<< HEAD
     "static/chunks/polyfills-fa276ba060a4a8ac7eef.js"
   ],
   "devFiles": [],
@@ -43,6 +44,36 @@
       "static/chunks/9bed589b913b826b7a398062e40600d6f63b6360.68cdf0c5bb973a7bf1ba.js",
       "static/chunks/c78be7b1ee60c74fe870b3423c4045df5e682e23.27bd94a5e138fcc66d28.js",
       "static/chunks/pages/chat-30f37369ae9a64c66a64.js"
+=======
+    "static/chunks/polyfills.js"
+  ],
+  "devFiles": [
+    "static/chunks/react-refresh.js"
+  ],
+  "ampDevFiles": [
+    "static/chunks/webpack.js",
+    "static/chunks/amp.js"
+  ],
+  "lowPriorityFiles": [
+    "static/development/_buildManifest.js",
+    "static/development/_ssgManifest.js"
+  ],
+  "pages": {
+    "/": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/index.js"
+    ],
+    "/_app": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/_app.js"
+    ],
+    "/_error": [
+      "static/chunks/main.js",
+      "static/chunks/webpack.js",
+      "static/chunks/pages/_error.js"
+>>>>>>> 902621d49b0d9d718bdf7c8ecf2432c5448b3387
     ]
   },
   "ampFirstPages": []

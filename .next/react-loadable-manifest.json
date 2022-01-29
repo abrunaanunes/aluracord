@@ -1,1 +1,12 @@
+<<<<<<< HEAD
 {}
+=======
+{
+  "./dev/noop": [
+    {
+      "id": "./node_modules/next/dist/client/dev/noop.js",
+      "file": "static/chunks/0.js"
+    }
+  ]
+}
+>>>>>>> 902621d49b0d9d718bdf7c8ecf2432c5448b3387
