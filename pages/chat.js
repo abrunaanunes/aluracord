@@ -1,10 +1,25 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzU1MTQ1NiwiZXhwIjoxOTU5MTI3NDU2fQ.G6SOfHkJZbQvDctYzRv4A0pJE423uPbSETZQKQuyPdQ';
+const SUPABASE_URL = 'https://djtodvpndrskvevlbgzq.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
     const [message, setMessage] = React.useState('');
     const [messageList, setMessageList] = React.useState([]);
+
+    React.useEffect(() => {
+        const supabaseData = supabaseClient
+            .from('messages')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data }) => {
+                setMessageList(data);
+            });
+    }, []);
     /*
     // Usuário
     -- Usuário digita no campo textarea
@@ -14,18 +29,25 @@ export default function ChatPage() {
     // Dev
     -- [x] Campo criado
     -- [x] Vamos usar o onChange usa o State (ter if para caso seja enter para limpar a variável)
-    -- [ ] Lista de mensagens
+    -- [x] Lista de mensagens
     */
    function handleNewMessage(newMessage) {
     const message = {
-        id: newMessage.length + 1,
-        from: 'bruna', 
+        from: 'abrunaanunes', 
         text: newMessage
     }
-    setMessageList([
-        message,
-        ...messageList,
-    ]);
+
+    supabaseClient
+        .from('messages')
+        .insert(
+            [message]
+        ).then(({ data }) => {
+            setMessageList([
+                data[0],
+                ...messageList
+            ]);
+        })
+
     setMessage('');
    }
     return (
@@ -45,8 +67,8 @@ export default function ChatPage() {
                     borderRadius: '5px',
                     backgroundColor: appConfig.theme.colors.neutrals[700],
                     height: '100%',
-                    maxWidth: '95%',
-                    maxHeight: '95vh',
+                    maxWidth: '60vw',
+                    maxHeight: '75vh',
                     padding: '32px',
                 }}
             >
@@ -135,13 +157,12 @@ function MessageList(props) {
         <Box
             tag="ul"
             styleSheet={{
-                overflow: 'scroll',
+                overflowY: 'auto',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
                 color: appConfig.theme.colors.neutrals["000"],
                 marginBottom: '16px',
-                overflow: 'hidden',
             }}
         >
             {props.messages.map((message) => {
@@ -171,7 +192,7 @@ function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/vanessametonini.png`}
+                                src={`https://github.com/${message.from}.png`}
                             />
                             <Text tag="strong">
                                 {message.from}

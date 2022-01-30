@@ -1,14 +1,8 @@
 {
   "/_app": "pages/_app.js",
-<<<<<<< HEAD
   "/chat": "pages/chat.html",
   "/": "pages/index.html",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/404": "pages/404.html"
-=======
-  "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/": "pages/index.js"
->>>>>>> 902621d49b0d9d718bdf7c8ecf2432c5448b3387
 }

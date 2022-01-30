@@ -1,11 +1,10 @@
 {
-<<<<<<< HEAD
     "name": "Hogwarts",
-=======
-    "name": "Aluracord - Matrix (Bruna)",
->>>>>>> 902621d49b0d9d718bdf7c8ecf2432c5448b3387
     "theme": {
       "colors": {
+        "red": {
+          "060": "#db0f0f"
+        },
         "primary": {
           "050": "#E3F9E5",
           "100": "#C1EAC5",
