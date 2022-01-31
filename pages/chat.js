@@ -1,15 +1,27 @@
-import { Box, Text, TextField, Image, Button } from '@skynexui/components';
+import { Box, Text, TextField, Image, Button, Icon } from '@skynexui/components';
+import { useRouter } from "next/router";
 import React from 'react';
 import appConfig from '../config.json';
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzU1MTQ1NiwiZXhwIjoxOTU5MTI3NDU2fQ.G6SOfHkJZbQvDctYzRv4A0pJE423uPbSETZQKQuyPdQ';
 const SUPABASE_URL = 'https://djtodvpndrskvevlbgzq.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function messageListener(addMessage) {
+    return supabaseClient
+        .from('messages')
+        .on('INSERT', (item) => {
+            addMessage(item.new);
+        })
+        .subscribe();
+}
 export default function ChatPage() {
     const [message, setMessage] = React.useState('');
     const [messageList, setMessageList] = React.useState([]);
+    const router = useRouter();
+    const userLogged = router.query.username;
 
     React.useEffect(() => {
         const supabaseData = supabaseClient
@@ -19,6 +31,11 @@ export default function ChatPage() {
             .then(({ data }) => {
                 setMessageList(data);
             });
+        messageListener((newMessage) => {
+            setMessageList((currentValue) => {
+                return [newMessage, ...currentValue];
+            });
+        });
     }, []);
     /*
     // Usuário
@@ -33,7 +50,7 @@ export default function ChatPage() {
     */
    function handleNewMessage(newMessage) {
     const message = {
-        from: 'abrunaanunes', 
+        from: userLogged, 
         text: newMessage
     }
 
@@ -41,15 +58,26 @@ export default function ChatPage() {
         .from('messages')
         .insert(
             [message]
-        ).then(({ data }) => {
-            setMessageList([
-                data[0],
-                ...messageList
-            ]);
+        )
+        .then(({ data }) => {
+           
         })
 
     setMessage('');
    }
+
+    function deleteMessage(currentMessage) {
+        supabaseClient
+            .from('messages')
+            .delete()
+            .match({id: currentMessage.id})
+            .then(({data}) => {
+                const messagesListFiltered = messageList.filter((message) => {
+                    return message.id != data[0].id
+                });
+                setMessageList(messagesListFiltered);
+            });
+    }
     return (
         <Box
             styleSheet={{
@@ -86,7 +114,7 @@ export default function ChatPage() {
                     }}
                 >
 
-                    <MessageList messages={messageList} />
+                    <MessageList messages={messageList} username={userLogged}/>
                     <Box
                         as="form"
                         styleSheet={{
@@ -119,13 +147,30 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
+                        <ButtonSendSticker 
+                            onStickerClick={(sticker) => {
+                                handleNewMessage(`:sticker: ${sticker}`)
+                            }}/>
                         <Button
                             type='button'
                             label='Enviar'
-                            buttonColors='#d3d3d3'
                             onClick={() => {
                                 handleNewMessage(message);
                             }}
+                            styleSheet={{
+                                borderRadius: '5px',
+                                padding: '0 3px 0 0',
+                                minWidth: '60px',
+                                minHeight: '44px',
+                                fontSize: '20px',
+                                marginBottom: '8px',
+                                marginRight: '10px',
+                                lineHeight: '0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: appConfig.theme.colors.neutrals[300],
+                              }}
                         />
                     </Box>
                 </Box>
@@ -153,6 +198,8 @@ function Header() {
 }
 
 function MessageList(props) {
+    const deleteMessage = props.deleteMessage;
+    const username = props.username;
     return (
         <Box
             tag="ul"
@@ -207,8 +254,26 @@ function MessageList(props) {
                             >
                                 {(new Date().toLocaleDateString())}
                             </Text>
+                            <Icon
+                                name={"FaTrash"}
+                                styleSheet={{
+                                    display: username === message.from ? "block" : "none",
+                                    marginLeft: "auto",
+                                    marginRight: ".7rem",
+                                    transition: ".4s ease all",
+                                    cursor: "pointer",
+                                }}
+                            ></Icon>
                         </Box>
-                        {message.text}
+                        {message.text.startsWith(':sticker:')
+                        ? ( <Image 
+                            styleSheet={{
+                                width: '150px',
+                                height: '150px',
+                                borderRadius: '5px',
+                            }}
+                            src={message.text.replace(':sticker:', '')}/> )
+                        : ( message.text )} 
                     </Text>
                 )
             })}
